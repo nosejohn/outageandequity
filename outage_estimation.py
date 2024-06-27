@@ -1,41 +1,32 @@
-Python 3.11.1 (v3.11.1:a7a450f84a, Dec  6 2022, 15:24:06) [Clang 13.0.0 (clang-1300.0.29.30)] on darwin
-Type "help", "copyright", "credits" or "license()" for more information.
->>> # -*- coding: utf-8 -*-
-... """
-... Created on Sat Jun 15 06:43:51 2024
-... 
-... @author: jkim3888
-... """
-... import pandas as pd
-... from tqdm import tqdm
-... 
-... # Load the data
-... outage = pd.read_csv('C:/Users/jkim3888/.spyder-py3/outage_all.csv', index_col=False)
-... 
-... # Ensure the timestamp column is datetime and drop rows with missing timestamps
-... outage['timestamp'] = pd.to_datetime(outage['timestamp'], errors='coerce')
-... outage = outage.dropna(subset=['timestamp'])
-... 
-... # Limit the dataset to start from April 13, 2023
-... start_date_limit = pd.Timestamp('2023-04-13')
-... outage = outage[outage['timestamp'] >= start_date_limit]
-... 
-... # Sort the DataFrame by zipcode and timestamp
-... outage = outage.sort_values(by=['zipcode', 'timestamp'])
-... 
-... # Calculate the span of days for each zip code
-... date_span = outage.groupby('zipcode')['timestamp'].agg(['min', 'max'])
-... date_span['span_days'] = (date_span['max'] - date_span['min']).dt.days
-... 
-... # Print the date span for each zip code
-... print("Date span for each zip code:")
-... print(date_span)
-... 
-... # Filter zip codes that span at least 365 days
-... valid_zipcodes = date_span[date_span['span_days'] >= 365].index
-... filtered_df = outage[outage['zipcode'].isin(valid_zipcodes)]
-... 
-... # Print the valid zip codes
+import pandas as pd
+from tqdm import tqdm
+
+# Load the data
+outage = pd.read_csv('C:/Users/jkim3888/.spyder-py3/outage_all.csv', index_col=False)
+ 
+# Ensure the timestamp column is datetime and drop rows with missing timestamps
+outage['timestamp'] = pd.to_datetime(outage['timestamp'], errors='coerce')
+outage = outage.dropna(subset=['timestamp'])
+ 
+# Limit the dataset to start from April 13, 2023
+start_date_limit = pd.Timestamp('2023-04-13')
+outage = outage[outage['timestamp'] >= start_date_limit]
+
+# Sort the DataFrame by zipcode and timestamp
+outage = outage.sort_values(by=['zipcode', 'timestamp']) 
+# Calculate the span of days for each zip code
+date_span = outage.groupby('zipcode')['timestamp'].agg(['min', 'max'])
+date_span['span_days'] = (date_span['max'] - date_span['min']).dt.days
+ 
+# Print the date span for each zip code
+print("Date span for each zip code:")
+print(date_span)
+ 
+# Filter zip codes that span at least 365 days
+valid_zipcodes = date_span[date_span['span_days'] >= 365].index
+filtered_df = outage[outage['zipcode'].isin(valid_zipcodes)]
+ 
+# Print the valid zip codes
 print("Valid zip codes:")
 print(valid_zipcodes)
 
